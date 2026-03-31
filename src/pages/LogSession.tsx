@@ -130,7 +130,7 @@ export default function LogSession() {
         rpeActual:     logs[i].rpeActual ? parseInt(logs[i].rpeActual) : undefined,
       }));
 
-      await api.saveSession(user.id, plan.id, selectedDay.day, exercises, notes || undefined);
+      await api.saveSession(user!.id, plan!.id, selectedDay.day, exercises, notes || undefined);
       setSaved(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al guardar");

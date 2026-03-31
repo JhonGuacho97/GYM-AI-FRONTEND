@@ -117,7 +117,7 @@ export default function Dashboard() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [nutrition, setNutrition] = useState<NutritionGoals | null>(null);
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
-  const [dataLoading, setDataLoading] = useState(true);
+  const [_, setDataLoading] = useState(true);
 
   useEffect(() => {
     if (!user?.id) return;

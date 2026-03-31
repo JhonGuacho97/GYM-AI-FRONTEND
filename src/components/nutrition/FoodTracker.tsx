@@ -4,9 +4,7 @@ import { Button } from "../ui/Button";
 import { api } from "../../lib/api";
 import {
   Flame,
-  Beef,
-  Wheat,
-  Droplets,
+
   Plus,
   Trash2,
   Loader2,

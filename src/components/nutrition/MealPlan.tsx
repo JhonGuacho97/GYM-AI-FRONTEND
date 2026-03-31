@@ -198,7 +198,7 @@ export function MealPlan({ userId, caloriesTarget, onMealAdded }: MealPlanProps)
   const [plan, setPlan]                 = useState<DayPlan[] | null>(null);
   const [generating, setGenerating]     = useState(false);
   const [addedMeals, setAddedMeals]     = useState<Set<string>>(new Set());
-  const [addingMeal, setAddingMeal]     = useState<string | null>(null);
+  const [_, setAddingMeal]     = useState<string | null>(null);
   const [error, setError]               = useState("");
 
   async function handleGenerate() {
