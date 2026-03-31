@@ -41,9 +41,9 @@ const features = [
 export default function Home() {
   const { user, isLoading } = useAuth();
 
-  // Redirigir usuarios autenticados al perfil
+  // Redirigir usuarios autenticados al dashboard
   if (!isLoading && user) {
-    return <Navigate to="/profile" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return (

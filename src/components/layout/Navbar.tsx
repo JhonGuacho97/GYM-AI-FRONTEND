@@ -5,10 +5,10 @@ import { UserButton } from "@neondatabase/neon-js/auth/react";
 import { useState } from "react";
 
 const navLinks = [
+  { to: "/dashboard", label: "Inicio"     },
   { to: "/profile",   label: "Mi Plan"    },
   { to: "/log",       label: "Registrar"  },
   { to: "/progress",  label: "Progreso"   },
-  { to: "/food",      label: "Comidas"    },
   { to: "/nutrition", label: "Nutrición"  },
   { to: "/body",      label: "Cuerpo"     },
 ];
@@ -32,9 +32,9 @@ export default function Navbar() {
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map(({ to, label }) => (
                 <Link key={to} to={to}>
-                  <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     pathname === to
-                      ? "bg-[var(--color-accent)] text-[var(--color-background)]"
+                      ? "nav-link-active"
                       : "text-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-card)]"
                   }`}>
                     {label}
@@ -42,9 +42,9 @@ export default function Navbar() {
                 </Link>
               ))}
               <Link to="/edit-profile">
-                <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                   pathname === "/edit-profile"
-                    ? "bg-[var(--color-accent)] text-[var(--color-background)]"
+                    ? "nav-link-active"
                     : "text-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-card)]"
                 }`}>
                   Perfil
@@ -83,9 +83,9 @@ export default function Navbar() {
         <div className="md:hidden border-t border-[var(--color-border)] bg-[var(--color-background)] px-6 py-4 space-y-1">
           {[...navLinks, { to: "/edit-profile", label: "Perfil" }].map(({ to, label }) => (
             <Link key={to} to={to} onClick={() => setMenuOpen(false)}>
-              <div className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              <div className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 pathname === to
-                  ? "bg-[var(--color-accent)] text-[var(--color-background)]"
+                  ? "bg-[var(--color-accent)] text-black"
                   : "text-[var(--color-muted)] hover:text-[var(--color-foreground)] hover:bg-[var(--color-card)]"
               }`}>
                 {label}

@@ -67,6 +67,8 @@ export const api = {
   // ── Nutrición ───────────────────────────────────────────────────────────────
   calculateNutrition: (userId: string) => post("/nutrition/calculate", { userId }),
   getNutrition: (userId: string) => get(`/nutrition?userId=${userId}`),
+  generateMealPlan: (userId: string, days: number) =>
+    post("/nutrition/meal-plan", { userId, days }),
 
   // ── Food tracker ────────────────────────────────────────────────────────────
   estimateFood: (description: string) => post("/food/estimate", { description }),
@@ -86,4 +88,5 @@ export const api = {
 
   getMeasurements: (userId: string) => get(`/measurements?userId=${userId}`),
   deleteMeasurement: (id: string) => del(`/measurements/${id}`),
+  analyzeMeasurements: (userId: string) => post("/measurements/analyze", { userId }),
 };

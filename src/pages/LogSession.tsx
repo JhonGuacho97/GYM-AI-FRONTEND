@@ -123,14 +123,14 @@ export default function LogSession() {
     setError("");
     try {
       const exercises: SessionExerciseInput[] = selectedDay.exercises.map((ex, i) => ({
-        exerciseName: ex.name,
+        exerciseName:  ex.name,
         setsCompleted: logs[i].setsCompleted,
         repsCompleted: logs[i].repsCompleted || ex.reps,
-        weightKg: logs[i].weightKg ? parseFloat(logs[i].weightKg) : undefined,
-        rpeActual: logs[i].rpeActual ? parseInt(logs[i].rpeActual) : undefined,
+        weightKg:      logs[i].weightKg ? parseFloat(logs[i].weightKg) : undefined,
+        rpeActual:     logs[i].rpeActual ? parseInt(logs[i].rpeActual) : undefined,
       }));
 
-      await api.saveSession(user!.id, plan!.id, selectedDay.day, exercises, notes || undefined);
+      await api.saveSession(user.id, plan.id, selectedDay.day, exercises, notes || undefined);
       setSaved(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al guardar");
@@ -140,7 +140,7 @@ export default function LogSession() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-6">
+    <div className="min-h-screen pt-24 pb-12 px-6 page-enter">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-1">Registrar Sesión</h1>
@@ -173,10 +173,11 @@ export default function LogSession() {
                 <button
                   key={day.day}
                   onClick={() => selectDay(day)}
-                  className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${selectedDay?.day === day.day
+                  className={`w-full text-left px-4 py-3 rounded-xl border transition-colors ${
+                    selectedDay?.day === day.day
                       ? "border-[var(--color-accent)] bg-[var(--color-accent)]/10"
                       : "border-[var(--color-border)] hover:border-[var(--color-accent)]/50"
-                    }`}
+                  }`}
                 >
                   <p className="font-medium">{day.day}</p>
                   <p className="text-xs text-[var(--color-accent)] mt-0.5">{day.focus}</p>

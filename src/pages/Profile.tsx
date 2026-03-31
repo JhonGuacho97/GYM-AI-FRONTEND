@@ -30,7 +30,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-6">
+    <div className="min-h-screen pt-24 pb-12 px-6 page-enter">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>

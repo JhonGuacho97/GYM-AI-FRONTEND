@@ -6,17 +6,16 @@ import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { api } from "../lib/api";
 import type { NutritionGoals } from "../types";
+import { FoodTracker } from "../components/nutrition/FoodTracker";
+import { MealPlan } from "../components/nutrition/MealPlan";
+import type { FoodLog } from "../components/nutrition/MealPlan";
 import {
   Flame, Beef, Wheat, Droplets, RefreshCcw,
-  Info, ChevronDown, ChevronUp, UtensilsCrossed,
+  Info, ChevronDown, ChevronUp,
 } from "lucide-react";
 
-// ─── Tips y estrategia por objetivo ──────────────────────────────────────────
 const goalContent: Record<string, {
-  label: string;
-  strategy: string;
-  tips: string[];
-  foods: string[];
+  label: string; strategy: string; tips: string[]; foods: string[];
 }> = {
   bulk: {
     label: "Ganar músculo",
@@ -75,10 +74,7 @@ const goalContent: Record<string, {
   },
 };
 
-// ─── Barra de macro ───────────────────────────────────────────────────────────
-function MacroBar({
-  label, grams, calories, total, color, icon: Icon,
-}: {
+function MacroBar({ label, grams, calories, total, color, icon: Icon }: {
   label: string; grams: number; calories: number;
   total: number; color: string; icon: React.ElementType;
 }) {
@@ -90,55 +86,39 @@ function MacroBar({
           <Icon className="w-4 h-4" style={{ color }} />
           <span className="font-medium text-sm">{label}</span>
         </div>
-        <div className="text-right flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <span className="font-bold">{grams}g</span>
-          <span className="text-xs text-[var(--color-muted)] bg-[var(--color-card)] px-2 py-0.5 rounded-full">
-            {pct}%
-          </span>
+          <span className="text-xs text-[var(--color-muted)] bg-[var(--color-card)] px-2 py-0.5 rounded-full">{pct}%</span>
         </div>
       </div>
       <div className="h-2.5 bg-[var(--color-border)] rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${pct}%`, backgroundColor: color }}
-        />
+        <div className="h-full rounded-full transition-all duration-700"
+          style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
-      <p className="text-xs text-[var(--color-muted)]">
-        {calories} kcal · {grams}g
-      </p>
+      <p className="text-xs text-[var(--color-muted)]">{calories} kcal · {grams}g</p>
     </div>
   );
 }
 
-// ─── Tips colapsables ─────────────────────────────────────────────────────────
 function TipsSection({ content }: { content: typeof goalContent[string] }) {
   const [open, setOpen] = useState(false);
   return (
     <Card variant="bordered" className="mb-6">
-      <button
-        className="w-full flex items-center justify-between"
-        onClick={() => setOpen(!open)}
-      >
+      <button className="w-full flex items-center justify-between" onClick={() => setOpen(!open)}>
         <div className="flex items-center gap-2">
           <Info className="w-4 h-4 text-[var(--color-accent)]" />
           <span className="font-semibold">Estrategia y consejos</span>
         </div>
-        {open
-          ? <ChevronUp className="w-4 h-4 text-[var(--color-muted)]" />
-          : <ChevronDown className="w-4 h-4 text-[var(--color-muted)]" />
-        }
+        {open ? <ChevronUp className="w-4 h-4 text-[var(--color-muted)]" />
+               : <ChevronDown className="w-4 h-4 text-[var(--color-muted)]" />}
       </button>
-
       {open && (
         <div className="mt-4 space-y-4">
           <p className="text-sm text-[var(--color-muted)] leading-relaxed border-l-2 border-[var(--color-accent)] pl-3">
             {content.strategy}
           </p>
-
           <div>
-            <p className="text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider mb-2">
-              Consejos clave
-            </p>
+            <p className="text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider mb-2">Consejos clave</p>
             <ul className="space-y-2">
               {content.tips.map((tip, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
@@ -148,17 +128,11 @@ function TipsSection({ content }: { content: typeof goalContent[string] }) {
               ))}
             </ul>
           </div>
-
           <div>
-            <p className="text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider mb-2">
-              Alimentos recomendados
-            </p>
+            <p className="text-xs font-medium text-[var(--color-muted)] uppercase tracking-wider mb-2">Alimentos recomendados</p>
             <div className="flex flex-wrap gap-2">
-              {content.foods.map((food) => (
-                <span
-                  key={food}
-                  className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-card)] border border-[var(--color-border)] text-[var(--color-muted)]"
-                >
+              {content.foods.map(food => (
+                <span key={food} className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-card)] border border-[var(--color-border)] text-[var(--color-muted)]">
                   {food}
                 </span>
               ))}
@@ -170,29 +144,30 @@ function TipsSection({ content }: { content: typeof goalContent[string] }) {
   );
 }
 
-// ─── Página principal ─────────────────────────────────────────────────────────
 export default function Nutrition() {
   const { user, plan, userProfile, isLoading } = useAuth();
-  const [goals, setGoals] = useState<NutritionGoals | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [goals, setGoals]             = useState<NutritionGoals | null>(null);
+  const [loading, setLoading]         = useState(true);
   const [calculating, setCalculating] = useState(false);
   const [missingData, setMissingData] = useState(false);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({ age: "", gender: "male", heightCm: "", weightKg: "" });
+  const [error, setError]             = useState("");
+  const [form, setForm]               = useState({ age: "", gender: "male", heightCm: "", weightKg: "" });
   const [savingProfile, setSavingProfile] = useState(false);
+
+  // Estado compartido: comidas añadidas desde MealPlan que deben
+  // reflejarse en tiempo real en FoodTracker
+  const [trackerFoods, setTrackerFoods] = useState<FoodLog[]>([]);
 
   useEffect(() => {
     if (!user?.id) return;
     api.getNutrition(user.id)
-      .then((data) => {
-        setGoals({
-          caloriesTarget: data.calories_target,
-          proteinG: data.protein_g,
-          carbsG: data.carbs_g,
-          fatG: data.fat_g,
-          calculatedAt: data.calculated_at,
-        });
-      })
+      .then(data => setGoals({
+        caloriesTarget: data.calories_target,
+        proteinG:       data.protein_g,
+        carbsG:         data.carbs_g,
+        fatG:           data.fat_g,
+        calculatedAt:   data.calculated_at,
+      }))
       .catch(() => setMissingData(true))
       .finally(() => setLoading(false));
   }, [user?.id]);
@@ -203,22 +178,28 @@ export default function Nutrition() {
 
   const goalKey = (userProfile?.goal && goalContent[userProfile.goal])
     ? userProfile.goal
-    : Object.keys(goalContent).find((k) =>
-      plan.overview.goal?.toLowerCase().includes(k)
-    ) ?? "recomp";
+    : Object.keys(goalContent).find(k => plan.overview.goal?.toLowerCase().includes(k)) ?? "recomp";
   const content = goalContent[goalKey];
 
+  // Callback que recibe cualquier FoodLog nuevo (desde MealPlan o FoodTracker)
+  // y lo agrega al estado compartido evitando duplicados
+  function handleFoodAdded(food: FoodLog) {
+    setTrackerFoods(prev => {
+      if (prev.some(f => f.id === food.id)) return prev;
+      return [...prev, food];
+    });
+  }
+
   async function handleCalculate() {
-    setCalculating(true);
-    setError("");
+    setCalculating(true); setError("");
     try {
       const data = await api.calculateNutrition(user!.id);
       setGoals({
         caloriesTarget: data.calories_target,
-        proteinG: data.protein_g,
-        carbsG: data.carbs_g,
-        fatG: data.fat_g,
-        calculatedAt: data.calculated_at,
+        proteinG:       data.protein_g,
+        carbsG:         data.carbs_g,
+        fatG:           data.fat_g,
+        calculatedAt:   data.calculated_at,
       });
       setMissingData(false);
     } catch (err: any) {
@@ -230,18 +211,12 @@ export default function Nutrition() {
   }
 
   async function handleSaveBodyData() {
-    if (!form.age || !form.heightCm || !form.weightKg) {
-      setError("Completa todos los campos");
-      return;
-    }
-    setSavingProfile(true);
-    setError("");
+    if (!form.age || !form.heightCm || !form.weightKg) { setError("Completa todos los campos"); return; }
+    setSavingProfile(true); setError("");
     try {
       await api.updateBodyData(user!.id, {
-        age: parseInt(form.age),
-        gender: form.gender,
-        heightCm: parseFloat(form.heightCm),
-        weightKg: parseFloat(form.weightKg),
+        age: parseInt(form.age), gender: form.gender,
+        heightCm: parseFloat(form.heightCm), weightKg: parseFloat(form.weightKg),
       });
       await handleCalculate();
     } catch (err: any) {
@@ -251,16 +226,14 @@ export default function Nutrition() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-6">
+    <div className="min-h-screen pt-24 pb-12 px-6 page-enter">
       <div className="max-w-2xl mx-auto">
 
         {/* Header */}
@@ -292,11 +265,9 @@ export default function Nutrition() {
                 <div key={key}>
                   <label className="text-xs text-[var(--color-muted)] mb-1 block">{label}</label>
                   <div className="relative">
-                    <input
-                      type="number"
-                      placeholder={placeholder}
+                    <input type="number" placeholder={placeholder}
                       value={(form as any)[key]}
-                      onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                      onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
                       className="w-full bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[var(--color-accent)]"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--color-muted)]">{unit}</span>
@@ -305,11 +276,8 @@ export default function Nutrition() {
               ))}
               <div>
                 <label className="text-xs text-[var(--color-muted)] mb-1 block">Género</label>
-                <select
-                  value={form.gender}
-                  onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
-                  className="w-full bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[var(--color-accent)]"
-                >
+                <select value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}
+                  className="w-full bg-[var(--color-card)] border border-[var(--color-border)] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-[var(--color-accent)]">
                   <option value="male">Hombre</option>
                   <option value="female">Mujer</option>
                 </select>
@@ -322,10 +290,9 @@ export default function Nutrition() {
           </Card>
         )}
 
-        {/* Resultados */}
         {goals && (
           <>
-            {/* Calorías */}
+            {/* Calorías objetivo */}
             <Card variant="bordered" className="mb-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -338,33 +305,28 @@ export default function Nutrition() {
                     <p className="text-xs text-[var(--color-muted)]">kcal / día</p>
                   </div>
                 </div>
-                <Button
-                  variant="secondary"
-                  className="gap-1.5 text-xs"
-                  onClick={handleCalculate}
-                  disabled={calculating}
-                >
+                <Button variant="secondary" className="gap-1.5 text-xs" onClick={handleCalculate} disabled={calculating}>
                   <RefreshCcw className="w-3 h-3" />
                   {calculating ? "..." : "Recalcular"}
                 </Button>
               </div>
             </Card>
 
-            {/* Macros */}
+            {/* Distribución de macros objetivo */}
             <Card variant="bordered" className="mb-6 space-y-5">
-              <h2 className="font-semibold">Distribución de macros</h2>
-              <MacroBar label="Proteína" grams={goals.proteinG} calories={goals.proteinG * 4} total={goals.caloriesTarget} color="var(--color-accent)" icon={Beef} />
-              <MacroBar label="Carbohidratos" grams={goals.carbsG} calories={goals.carbsG * 4} total={goals.caloriesTarget} color="#60a5fa" icon={Wheat} />
-              <MacroBar label="Grasas" grams={goals.fatG} calories={goals.fatG * 9} total={goals.caloriesTarget} color="#f97316" icon={Droplets} />
+              <h2 className="font-semibold">Distribución de macros objetivo</h2>
+              <MacroBar label="Proteína"      grams={goals.proteinG} calories={goals.proteinG * 4} total={goals.caloriesTarget} color="var(--color-accent)" icon={Beef} />
+              <MacroBar label="Carbohidratos" grams={goals.carbsG}   calories={goals.carbsG * 4}   total={goals.caloriesTarget} color="#60a5fa"              icon={Wheat} />
+              <MacroBar label="Grasas"        grams={goals.fatG}     calories={goals.fatG * 9}      total={goals.caloriesTarget} color="#f97316"              icon={Droplets} />
             </Card>
 
-            {/* Cards de macros */}
+            {/* Cards macros */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               {[
                 { label: "Proteína", value: goals.proteinG, color: "var(--color-accent)", desc: "2g / kg" },
-                { label: "Carbos", value: goals.carbsG, color: "#60a5fa", desc: "~50%" },
-                { label: "Grasas", value: goals.fatG, color: "#f97316", desc: "~25%" },
-              ].map((m) => (
+                { label: "Carbos",   value: goals.carbsG,   color: "#60a5fa",             desc: "~50%" },
+                { label: "Grasas",   value: goals.fatG,     color: "#f97316",             desc: "~25%" },
+              ].map(m => (
                 <Card key={m.label} variant="bordered" className="text-center py-4">
                   <p className="text-2xl font-bold" style={{ color: m.color }}>{m.value}g</p>
                   <p className="text-xs font-medium mt-0.5">{m.label}</p>
@@ -373,33 +335,35 @@ export default function Nutrition() {
               ))}
             </div>
 
-            {/* Tips colapsables */}
+            {/* Tips */}
             <TipsSection content={content} />
 
-            {/* Placeholder tracker de comidas */}
-            <Card variant="bordered" className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <UtensilsCrossed className="w-4 h-4 text-[var(--color-muted)]" />
-                  <h2 className="font-semibold">Registro de comidas</h2>
-                </div>
-                <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--color-card)] border border-[var(--color-border)] text-[var(--color-muted)]">
-                  Próximamente
-                </span>
-              </div>
-              <div className="rounded-xl border border-dashed border-[var(--color-border)] p-6 text-center space-y-2">
-                <div className="w-10 h-10 rounded-full bg-[var(--color-card)] flex items-center justify-center mx-auto">
-                  <UtensilsCrossed className="w-5 h-5 text-[var(--color-muted)]" />
-                </div>
-                <p className="text-sm font-medium">Tracker de comidas con IA</p>
-                <p className="text-xs text-[var(--color-muted)] max-w-xs mx-auto">
-                  Próximamente podrás registrar tus comidas y ver en tiempo real cuántas calorías y macros llevas en el día.
-                </p>
-              </div>
-            </Card>
+            {/* ── Plan de comidas con IA ── */}
+            <div className="mb-6">
+              <h2 className="font-semibold text-lg mb-4">Plan de comidas</h2>
+              <MealPlan
+                userId={user!.id}
+                caloriesTarget={goals.caloriesTarget}
+                onMealAdded={handleFoodAdded}
+              />
+            </div>
+
+            {/* ── Registro de comidas del día ── */}
+            <div className="mb-6">
+              <h2 className="font-semibold text-lg mb-4">Registro del día</h2>
+              <FoodTracker
+                userId={user!.id}
+                caloriesTarget={goals.caloriesTarget}
+                proteinTarget={goals.proteinG}
+                carbsTarget={goals.carbsG}
+                fatTarget={goals.fatG}
+                externalFoods={trackerFoods}
+                onFoodAdded={handleFoodAdded}
+              />
+            </div>
 
             <p className="text-xs text-center text-[var(--color-muted)]">
-              Calculado el{" "}
+              Macros calculados el{" "}
               {new Date(goals.calculatedAt).toLocaleDateString("es-ES", {
                 day: "numeric", month: "long", year: "numeric",
               })}

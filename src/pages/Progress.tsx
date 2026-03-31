@@ -278,7 +278,7 @@ export default function Progress() {
   const uniqueDays    = new Set(sessions.map((s) => s.day_name)).size;
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-6">
+    <div className="min-h-screen pt-24 pb-12 px-6 page-enter">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-1">Tu Progreso</h1>

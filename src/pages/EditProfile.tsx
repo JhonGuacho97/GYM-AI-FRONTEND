@@ -131,7 +131,7 @@ export default function EditProfile() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-6">
+    <div className="min-h-screen pt-24 pb-12 px-6 page-enter">
       <div className="max-w-xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-1">Editar Perfil</h1>
