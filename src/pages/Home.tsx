@@ -1,8 +1,7 @@
 import { Link, Navigate } from "react-router-dom";
 import {
-  Zap, Target, Calendar, ArrowRight, Sparkles, Clock,
+  Zap, Target, Calendar, ArrowRight, Sparkles,
   Dumbbell, Utensils, TrendingUp, Scale, CheckCircle2,
-  ChevronRight,
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../context/AuthContext";
@@ -195,7 +194,7 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {steps.map((step, i) => (
+            {steps.map((step,_) => (
               <div key={step.num} className="flex gap-5">
                 <div className="shrink-0 w-12 h-12 rounded-xl bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 flex items-center justify-center">
                   <span className="text-sm font-bold text-[var(--color-accent)]">{step.num}</span>
