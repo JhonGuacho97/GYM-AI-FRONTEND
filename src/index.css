@@ -25,6 +25,16 @@
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* Espacio para el bottom tab bar en móvil */
+  main {
+    padding-bottom: 4rem;
+  }
+
+  @media (min-width: 1024px) {
+    main { padding-bottom: 0; }
   }
 
   [data-slot="skeleton"],
@@ -34,6 +44,14 @@
 
   * {
     scroll-behavior: smooth;
+  }
+}
+
+/* ── Padding bottom móvil para el bottom tab bar ──────────────────────── */
+@media (max-width: 1024px) {
+  .page-enter {
+    padding-top: 3.5rem !important; /* h-14 = 56px */
+    padding-bottom: calc(56px + 1rem) !important;
   }
 }
 
